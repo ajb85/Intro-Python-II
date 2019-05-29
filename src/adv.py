@@ -1,37 +1,75 @@
 from room import Room
+from player import Player
+from item import Item
+from roomInfo import roomInfo
 
 # Declare all the rooms
 
-room = {
-    'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons"),
+class Game:
+    def __init__(self, roomsInfo, items=[]):
+        self.rooms = self._getRooms(roomsInfo)
+        self.items = items
 
-    'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
-passages run north and east."""),
+    def _findByID(self, collection, id):
+        for thing in self[collection]:
+            if thing.id is id:
+                return thing
 
-    'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
-into the darkness. Ahead to the north, a light flickers in
-the distance, but there is no way across the chasm."""),
+    def _linkRooms(self, rooms):
+        for key in rooms:
+            # Build links for each room.  rooms[key] is the class object for a room.
+            # The links are created from the provided links in roomInfo.
+            # However, the connecting room's id must be found to create the connection
+            links = roomInfo[key]["links"]
+            for direction in links:
+                linkedKey = links[direction]
+                id = rooms[linkedKey].id
+                rooms[key].connectRooms(id, direction)
 
-    'narrow':   Room("Narrow Passage", """The narrow passage bends here from west
-to north. The smell of gold permeates the air."""),
+    def _getRooms(self, roomsInfo):
+        rooms = {}
+        for key in roomInfo:
+            # Iterate roomInfo and for each 'key', create a new Room class, populate 'rooms'
+            info = roomInfo[key]
+            rooms[key] = Room(info["name"], info["description"])
+        # _linkRooms will mutate the objects, no need to assign
+        self._linkRooms(rooms)
+        return rooms
 
-    'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
-chamber! Sadly, it has already been completely emptied by
-earlier adventurers. The only exit is to the south."""),
-}
+    def commands(self, input):
+        commands = {"q":False}
+        if input in commands:
+            return commands[input]
+        else:
+            return None
+    
+    def _getName(self):
+        while True:
+            input = Input("Please enter a name for your character: ")
+            command = 
+            if len(playerName) > 0:
+                return playerName
+
+    def start(self):
+        while True:
+            playerName = self._getName()
+            self.player = Player(playerName)
 
 
-# Link rooms together
+    def exploreRoom(self, id):
+        room = self._findByID("rooms", id)
+        print("You look around the room, here's what you see: ")
+        for item in room.items:
+            print(item)
+    
+    def enterRoom(self, id):
+        self.player.moveToRoom(id)
+        room = self._findByID("rooms", id)
+        print(room.description)
 
-room['outside'].n_to = room['foyer']
-room['foyer'].s_to = room['outside']
-room['foyer'].n_to = room['overlook']
-room['foyer'].e_to = room['narrow']
-room['overlook'].s_to = room['foyer']
-room['narrow'].w_to = room['foyer']
-room['narrow'].n_to = room['treasure']
-room['treasure'].s_to = room['narrow']
+
+    
+game = Game(roomInfo)
 
 #
 # Main
@@ -39,7 +77,7 @@ room['treasure'].s_to = room['narrow']
 
 # Make a new player object that is currently in the 'outside' room.
 
-# Write a loop that:
+# Write a loop that:``
 #
 # * Prints the current room name
 # * Prints the current description (the textwrap module might be useful here).
@@ -49,3 +87,4 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
