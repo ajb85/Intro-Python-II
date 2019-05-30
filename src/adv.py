@@ -20,11 +20,15 @@ class Game:
                 self._enterRoom(self.player.location)
                 break
                 
+    def _getPlayerName(self):
+        playerName = input("\nPlease enter a name for your character: ")
+        if len(playerName) > 0:
+            return playerName
+
     def _findRoomByID(self, id):
         for key in self.rooms:
             if self.rooms[key].id == id:
                 return self.rooms[key]
-
 
     def _selectRoom(self, room):
         while True:
@@ -41,10 +45,6 @@ class Game:
         room.enter(self.player.name)
         self._selectRoom(room)
 
-    def _getPlayerName(self):
-        playerName = input("\nPlease enter a name for your character: ")
-        if len(playerName) > 0:
-            return playerName
 
     def _linkRooms(self, rooms):
         for key in rooms:
